@@ -1,0 +1,1 @@
+player sprites max 60x72 px

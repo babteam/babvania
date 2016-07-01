@@ -4,10 +4,31 @@
     <Config>Configs\Default</Config>
   </Configs>
   <NewExtensions/>
-  <sounds name="sound"/>
-  <sprites name="sprites"/>
+  <sounds name="sound">
+    <sounds name="player">
+      <sound>sound\jump_start</sound>
+      <sound>sound\jump_end</sound>
+    </sounds>
+  </sounds>
+  <sprites name="sprites">
+    <sprite>sprites\standR</sprite>
+    <sprite>sprites\standL</sprite>
+  </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
+  <scripts name="scripts">
+    <script>scripts\script0.gml</script>
+    <script>scripts\init.gml</script>
+  </scripts>
+  <objects name="objects">
+    <object>objects\player</object>
+    <objects name="storage">
+      <object>objects\settings</object>
+    </objects>
+  </objects>
+  <rooms name="rooms">
+    <room>rooms\title</room>
+  </rooms>
   <help>
     <rtf>help.rtf</rtf>
   </help>
