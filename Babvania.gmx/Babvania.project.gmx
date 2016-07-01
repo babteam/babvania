@@ -17,17 +17,22 @@
   <backgrounds name="background"/>
   <paths name="paths"/>
   <scripts name="scripts">
-    <script>scripts\script0.gml</script>
     <script>scripts\init.gml</script>
+    <script>scripts\roomChange.gml</script>
+    <script>scripts\cleanup.gml</script>
   </scripts>
   <objects name="objects">
     <object>objects\player</object>
     <objects name="storage">
       <object>objects\settings</object>
     </objects>
+    <object>objects\menu_input</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\title</room>
+    <rooms name="testroom">
+      <room>rooms\testroom0</room>
+    </rooms>
   </rooms>
   <help>
     <rtf>help.rtf</rtf>

@@ -1,1 +1,2 @@
 player sprites max 60x72 px
+tile size 32x32 px

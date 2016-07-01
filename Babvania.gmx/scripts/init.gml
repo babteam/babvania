@@ -1,11 +1,13 @@
 ///Initialization Logic
 //Handles necessary setup on game start
 
-settings.key_left = vk_left;
-settings.key_right = vk_right;
-settings.key_up = vk_up;
-settings.key_down = vk_down;
-settings.key_jump = ord('Z');
-settings.key_shoot = ord('X');
+global.settingsID = settings.id; //Stores ID of settings object
 
+instance_deactivate_object(global.settingsID);
 
+global.settingsID.key_left = vk_left;
+global.settingsID.key_right = vk_right;
+global.settingsID.key_up = vk_up;
+global.settingsID.key_down = vk_down;
+global.settingsID.key_jump = ord('Z');
+global.settingsID.key_shoot = ord('X');
