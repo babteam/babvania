@@ -28,8 +28,10 @@
             <string>///Initialization Logic
 
 //Variables
-isFalling = 0;
-isSprinting = 0;
+isFalling = false;
+isSprinting = false;
+isJumpHeld = false;
+isShootHeld = false;
 diaperState = PLAYER_DIAPER_DRY;
 height = 72;
 width = 60;
@@ -59,23 +61,23 @@ sprintMeter = PLAYER_SPRINT_MAX;
             <string>///Player Movement
 
 //Sprint check
-if (keyboard_check(global.settingsID.key_sprint) &amp;&amp; self.sprintMeter &gt;= PLAYER_SPRINT_MIN)
+if (keyboard_check(global.settingsID.key_sprint) &amp;&amp; sprintMeter &gt;= PLAYER_SPRINT_MIN)
 {
-    self.isSprinting = true;
+    isSprinting = true;
 }
 
 //Left/right movement
 if (keyboard_check(global.settingsID.key_right) &amp;&amp; !keyboard_check(global.settingsID.key_left)){ //Right
     sprite_index = standR;
-    if (self.hspeed + PLAYER_ACCEL &lt; getMaxSpeed(self)) {
-        self.hspeed += PLAYER_ACCEL;
+    if (hspeed + PLAYER_ACCEL &lt; getMaxSpeed(self)) {
+        hspeed += PLAYER_ACCEL;
     } else {
         hspeed = getMaxSpeed(self);
     }
 } else if (!keyboard_check(global.settingsID.key_right) &amp;&amp; keyboard_check(global.settingsID.key_left)) { //Left
     sprite_index = standL;
-    if (self.hspeed - PLAYER_ACCEL &gt; -1*getMaxSpeed(self)) {
-        self.hspeed -= PLAYER_ACCEL;
+    if (hspeed - PLAYER_ACCEL &gt; -1*getMaxSpeed(self)) {
+        hspeed -= PLAYER_ACCEL;
     } else {
         hspeed = -1*getMaxSpeed(self);
     }
@@ -91,10 +93,13 @@ if (keyboard_check(global.settingsID.key_right) &amp;&amp; !keyboard_check(globa
 }
 
 //Jumping
-if (keyboard_check(global.settingsID.key_jump) &amp;&amp; !self.isFalling) {
-    self.vspeed = -1*PLAYER_SPEED_JUMP;
-    self.isFalling = true;
+if (keyboard_check(global.settingsID.key_jump) &amp;&amp; !isFalling &amp;&amp; !isJumpHeld) {
+    vspeed = -1*PLAYER_SPEED_JUMP;
+    isFalling = true;
+    isJumpHeld = true;
     audio_play_sound(player_jump_start, 1, false);
+} else if (!keyboard_check(global.settingsID.key_jump) &amp;&amp; isJumpHeld) {
+    isJumpHeld = false; // allow buffered inputs but prevent simply holding jump
 }
 
 //Falling
@@ -102,9 +107,9 @@ if (place_free(x+hspeed, y+1) &amp;&amp; !isFalling)
     isFalling = true; //fall if not on ground
     
 if (isFalling &amp;&amp; vspeed + GRAVITY &lt; GRAVITY_TERMINAL) { //gravity affects speed
-    self.vspeed += GRAVITY;
+    vspeed += GRAVITY;
 } else if (isFalling &amp;&amp; vspeed + GRAVITY &gt;= GRAVITY_TERMINAL) {
-    self.vspeed = GRAVITY_TERMINAL;
+    vspeed = GRAVITY_TERMINAL;
 }
 
 //Y Collision detection
@@ -125,16 +130,16 @@ if (!place_free(x+hspeed, y+vspeed-1)) {
 }
 
 //Sprint check and drain
-if (self.isSprinting) {
-    self.sprintMeter -= PLAYER_SPRINT_DRAIN;
-    if(self.sprintMeter &lt;= 0) {
-        self.isSprinting = false;
-        self.sprintMeter = 0;
+if (isSprinting) {
+    sprintMeter -= PLAYER_SPRINT_DRAIN;
+    if(sprintMeter &lt;= 0) {
+        isSprinting = false;
+        sprintMeter = 0;
     }
-} else if (self.sprintMeter &lt; PLAYER_SPRINT_MAX) { //Sprint recovery
-    self.sprintMeter += getRecovery(self);
-    if(self.sprintMeter &gt; PLAYER_SPRINT_MAX)
-        self.sprintMeter = PLAYER_SPRINT_MAX;
+} else if (sprintMeter &lt; PLAYER_SPRINT_MAX) { //Sprint recovery
+    sprintMeter += getRecovery(self);
+    if(sprintMeter &gt; PLAYER_SPRINT_MAX)
+        sprintMeter = PLAYER_SPRINT_MAX;
 }
 
 x+=hspeed;
