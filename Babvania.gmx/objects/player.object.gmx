@@ -8,6 +8,37 @@
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
+    <event eventtype="0" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Initialization Logic
+
+//Variables
+isFalling = 0;
+isSprinting = 0;
+diaperState = PLAYER_DIAPER_DRY;
+height = 72;
+width = 60;
+sprintMeter = PLAYER_SPRINT_MAX;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="3" enumb="0">
       <action>
         <libid>1</libid>
@@ -27,19 +58,59 @@
             <kind>1</kind>
             <string>///Player Movement
 
+//Sprint check
+if (keyboard_check(global.settingsID.key_sprint) &amp;&amp; self.sprintMeter &gt;= PLAYER_SPRINT_MIN)
+{
+    self.isSprinting = true;
+}
+
 //Left/right movement
-if (keyboard_check(global.settingsID.key_right) &amp;&amp; !keyboard_check(global.settingsID.key_left) &amp;&amp; self.hspeed &lt;6){
-    self.hspeed += 3;
-} else if (!keyboard_check(global.settingsID.key_right) &amp;&amp; keyboard_check(global.settingsID.key_left) &amp;&amp; self.hspeed &gt;-6) {
-    self.hspeed -= 3;
-} else if (hspeed != 0) {
-    if (hspeed &gt; 3) {
-        hspeed -= 3;
-    } else if (hspeed &lt; -3) {
-        hspeed += 3;
-    } else if ((hspeed &gt; 0 &amp;&amp; hspeed &lt;=3) || (hspeed &lt; 0 &amp;&amp; hspeed &gt;=-3)) {
-        hspeed = 0;
+if (keyboard_check(global.settingsID.key_right) &amp;&amp; !keyboard_check(global.settingsID.key_left)){ //Right
+    if (self.hspeed + PLAYER_ACCEL &lt; getMaxSpeed(self)) {
+        self.hspeed += PLAYER_ACCEL;
+    } else {
+        hspeed = getMaxSpeed(self);
     }
+} else if (!keyboard_check(global.settingsID.key_right) &amp;&amp; keyboard_check(global.settingsID.key_left)) { //Left
+    if (self.hspeed - PLAYER_ACCEL &gt; -1*getMaxSpeed(self)) {
+        self.hspeed -= PLAYER_ACCEL;
+    } else {
+        hspeed = -1*getMaxSpeed(self);
+    }
+} else if (hspeed != 0) { //Stopping/released keys
+    isSprinting = false;
+    if (hspeed &gt; PLAYER_ACCEL) {
+        hspeed -= PLAYER_ACCEL;
+    } else if (hspeed &lt; -1*PLAYER_ACCEL) {
+        hspeed += PLAYER_ACCEL;
+    } else if ((hspeed &gt; 0 &amp;&amp; hspeed &lt;=PLAYER_ACCEL) || (hspeed &lt; 0 &amp;&amp; hspeed &gt;=-PLAYER_ACCEL)) {
+        hspeed = 0; //Set speed to zero if below a certain point
+    }
+}
+
+//Jumping
+if (keyboard_check(global.settingsID.key_jump) &amp;&amp; !self.isFalling) {
+    self.vspeed = -1*PLAYER_SPEED_JUMP;
+    self.isFalling = 1;
+    audio_play_sound(player_jump_start, 1, false);
+}
+
+//Falling
+if (isFalling &amp;&amp; vspeed &lt;12) {
+    self.vspeed += global.gravity;
+}
+
+//Sprint check and drain
+if (self.isSprinting) {
+    self.sprintMeter -= PLAYER_SPRINT_DRAIN;
+    if(self.sprintMeter &lt;= 0) {
+        self.isSprinting = false;
+        self.sprintMeter = 0;
+    }
+} else if (self.sprintMeter &lt; PLAYER_SPRINT_MAX) { //Sprint recovery
+    self.sprintMeter += getRecovery(self);
+    if(self.sprintMeter &gt; PLAYER_SPRINT_MAX)
+        self.sprintMeter = PLAYER_SPRINT_MAX;
 }
 </string>
           </argument>

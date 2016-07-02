@@ -6,8 +6,8 @@
   <NewExtensions/>
   <sounds name="sound">
     <sounds name="player">
-      <sound>sound\jump_start</sound>
-      <sound>sound\jump_end</sound>
+      <sound>sound\player_jump_start</sound>
+      <sound>sound\player_jump_end</sound>
     </sounds>
   </sounds>
   <sprites name="sprites">
@@ -20,6 +20,10 @@
     <script>scripts\init.gml</script>
     <script>scripts\roomChange.gml</script>
     <script>scripts\cleanup.gml</script>
+    <scripts name="player">
+      <script>scripts\getMaxSpeed.gml</script>
+      <script>scripts\getRecovery.gml</script>
+    </scripts>
   </scripts>
   <objects name="objects">
     <object>objects\player</object>
@@ -34,6 +38,24 @@
       <room>rooms\testroom0</room>
     </rooms>
   </rooms>
+  <constants number="16">
+    <constant name="PLAYER_SPRINT_DRAIN">5</constant>
+    <constant name="PLAYER_SPEED_DRY">5</constant>
+    <constant name="PLAYER_SPEED_WET">4</constant>
+    <constant name="PLAYER_SPEED_FULL">3</constant>
+    <constant name="PLAYER_SPEED_SPRINT">7</constant>
+    <constant name="PLAYER_SPEED_JUMP">12</constant>
+    <constant name="GRAVITY">0.5</constant>
+    <constant name="PLAYER_REC_DRY">5</constant>
+    <constant name="PLAYER_REC_WET">4</constant>
+    <constant name="PLAYER_REC_FULL">3</constant>
+    <constant name="PLAYER_DIAPER_DRY">0</constant>
+    <constant name="PLAYER_DIAPER_WET">1</constant>
+    <constant name="PLAYER_DIAPER_FULL">2</constant>
+    <constant name="PLAYER_ACCEL">3</constant>
+    <constant name="PLAYER_SPRINT_MIN">30</constant>
+    <constant name="PLAYER_SPRINT_MAX">100</constant>
+  </constants>
   <help>
     <rtf>help.rtf</rtf>
   </help>

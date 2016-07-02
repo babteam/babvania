@@ -1,6 +1,7 @@
 ///Initialization Logic
 //Handles necessary setup on game start
 
+//Settings
 global.settingsID = settings.id; //Stores ID of settings object
 
 instance_deactivate_object(global.settingsID);
