@@ -96,8 +96,10 @@ if (keyboard_check(global.settingsID.key_jump) &amp;&amp; !self.isFalling) {
 }
 
 //Falling
-if (isFalling &amp;&amp; vspeed &lt;12) {
-    self.vspeed += global.gravity;
+if (isFalling &amp;&amp; vspeed + GRAVITY &lt; GRAVITY_TERMINAL) {
+    self.vspeed += GRAVITY;
+} else if (isFalling &amp;&amp; vspeed + GRAVITY &gt;= GRAVITY_TERMINAL) {
+    self.vspeed = GRAVITY_TERMINAL;
 }
 
 //Sprint check and drain
