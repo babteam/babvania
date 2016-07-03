@@ -40,6 +40,7 @@
     </objects>
     <objects name="environment">
       <object>objects\tile</object>
+      <object>objects\tile45</object>
     </objects>
     <object>objects\player</object>
   </objects>
@@ -59,7 +60,7 @@
     <constant name="PLAYER_REC_DRY">5</constant>
     <constant name="PLAYER_REC_FULL">3</constant>
     <constant name="PLAYER_REC_WET">4</constant>
-    <constant name="PLAYER_SLOPE_HEIGHT">10</constant>
+    <constant name="PLAYER_SLOPE_HEIGHT">1.2</constant>
     <constant name="PLAYER_SPEED_DRY">5</constant>
     <constant name="PLAYER_SPEED_FULL">3</constant>
     <constant name="PLAYER_SPEED_JUMP">12</constant>

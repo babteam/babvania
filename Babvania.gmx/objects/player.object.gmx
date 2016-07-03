@@ -60,6 +60,10 @@ sprintMeter = PLAYER_SPRINT_MAX;
             <kind>1</kind>
             <string>///Player Movement
 
+//Revert vspeed. As vspeed should not change unless you are on a slope or falling, resets it to zero if not falling (slope handled later on)
+if (!isFalling)
+    vspeed = 0;
+
 //Sprint check
 if (keyboard_check(global.settingsID.key_sprint) &amp;&amp; sprintMeter &gt;= PLAYER_SPRINT_MIN)
 {
@@ -92,6 +96,24 @@ if (keyboard_check(global.settingsID.key_right) &amp;&amp; !keyboard_check(globa
     }
 }
 
+//Slope detection
+//Up
+if(!isFalling &amp;&amp; !place_free(x+hspeed, y+vspeed) &amp;&amp; place_free(x+hspeed, y+vspeed-PLAYER_SLOPE_HEIGHT*hspeed)) {
+    for ( i = 0; i &lt;= PLAYER_SLOPE_HEIGHT*hspeed; i++) {
+        if(place_free(x+hspeed, y+vspeed-i)) {
+            vspeed -= i;
+            break;
+        }
+    }
+} else if(place_free(x+hspeed, y+vspeed) &amp;&amp; !place_free(x+hspeed, y+vspeed+PLAYER_SLOPE_HEIGHT*hspeed+1)) { //Down
+    for ( i = 0; i &lt;= PLAYER_SLOPE_HEIGHT*hspeed+1; i++) {
+        if(!place_free(x+hspeed, y+vspeed+i)) {
+            vspeed += i-1;
+            break;
+        }
+    }
+}
+
 //Jumping
 if (keyboard_check(global.settingsID.key_jump) &amp;&amp; !isFalling &amp;&amp; !isJumpHeld) {
     vspeed = -1*PLAYER_SPEED_JUMP;
@@ -103,7 +125,7 @@ if (keyboard_check(global.settingsID.key_jump) &amp;&amp; !isFalling &amp;&amp; 
 }
 
 //Falling
-if (place_free(x+hspeed, y+1) &amp;&amp; !isFalling)
+if (place_free(x+hspeed, y+vspeed+1) &amp;&amp; !isFalling)
     isFalling = true; //fall if not on ground
     
 if (isFalling &amp;&amp; vspeed + GRAVITY &lt; GRAVITY_TERMINAL) { //gravity affects speed
@@ -113,7 +135,7 @@ if (isFalling &amp;&amp; vspeed + GRAVITY &lt; GRAVITY_TERMINAL) { //gravity aff
 }
 
 //Y Collision detection
-if (!place_free(x+hspeed, y+vspeed-1)) {
+if (!place_free(x+hspeed, y+vspeed)) {
     if ( vspeed &gt; 0 ) {
         for ( i = vspeed;  i &gt;= 0 &amp;&amp; isFalling == true; i --)
         {
@@ -124,7 +146,19 @@ if (!place_free(x+hspeed, y+vspeed-1)) {
                 isFalling = false;
             }
         } if(isFalling) {
-            show_message("Error: Invalid Y Coordinate. Current Coordinates: (" + string(x) + "," + string(y) + ")");
+            for ( i = vspeed;  i &gt;= 0 &amp;&amp; isFalling == true; i --)
+            {
+                if (place_free(x+i, y+i)) {
+                    hspeed = 0;
+                    vspeed = 0;
+                    y += i;
+                    audio_play_sound(player_jump_end, 1, false);
+                    isFalling = false;
+                }
+            }
+            if(isFalling) {
+                show_message("Error: Invalid Y Coordinate. Current Coordinates: (" + string(x) + "," + string(y) + ")");
+            }
         }
     }
 }
