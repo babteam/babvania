@@ -44,213 +44,41 @@ sprintMeter = PLAYER_SPRINT_MAX;
     <event eventtype="3" enumb="0">
       <action>
         <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
+        <id>601</id>
+        <kind>0</kind>
         <userelative>0</userelative>
         <isquestion>0</isquestion>
         <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
+        <exetype>1</exetype>
+        <functionname>action_execute_script</functionname>
         <codestring></codestring>
         <whoName>self</whoName>
         <relative>0</relative>
         <isnot>0</isnot>
         <arguments>
           <argument>
-            <kind>1</kind>
-            <string>///Player Movement
-
-//Revert vspeed. As vspeed should not change unless you are on a slope or falling, resets it to zero if not falling (slope handled later on)
-if (!isFalling)
-    vspeed = 0;
-
-//Sprint check
-if (keyboard_check(global.settingsID.key_sprint) &amp;&amp; sprintMeter &gt;= PLAYER_SPRINT_MIN)
-{
-    isSprinting = true;
-}
-
-//Left/right movement
-if (keyboard_check(global.settingsID.key_right) &amp;&amp; !keyboard_check(global.settingsID.key_left)){ //Right
-    sprite_index = standR;
-    if (hspeed + PLAYER_ACCEL &lt; getMaxSpeed(self)) {
-        hspeed += PLAYER_ACCEL;
-    } else {
-        hspeed = getMaxSpeed(self);
-    }
-} else if (!keyboard_check(global.settingsID.key_right) &amp;&amp; keyboard_check(global.settingsID.key_left)) { //Left
-    sprite_index = standL;
-    if (hspeed - PLAYER_ACCEL &gt; -1*getMaxSpeed(self)) {
-        hspeed -= PLAYER_ACCEL;
-    } else {
-        hspeed = -1*getMaxSpeed(self);
-    }
-} else if (hspeed != 0) { //Stopping/released keys
-    isSprinting = false;
-    if (hspeed &gt; PLAYER_ACCEL) {
-        hspeed -= PLAYER_ACCEL;
-    } else if (hspeed &lt; -1*PLAYER_ACCEL) {
-        hspeed += PLAYER_ACCEL;
-    } else if ((hspeed &gt; 0 &amp;&amp; hspeed &lt;=PLAYER_ACCEL) || (hspeed &lt; 0 &amp;&amp; hspeed &gt;=-PLAYER_ACCEL)) {
-        hspeed = 0; //Set speed to zero if below a certain point
-    }
-}
-
-//Slope detection
-//Up
-if(!isFalling &amp;&amp; !place_free(x+hspeed, y+vspeed) &amp;&amp; place_free(x+hspeed, y-PLAYER_SLOPE_HEIGHT*hspeed-1)) {
-    for ( i = 0; i &lt;= PLAYER_SLOPE_HEIGHT*hspeed-1; i++) {
-        if(place_free(x+hspeed, y-i)) {
-            vspeed = -1*i;
-            break;
-        }
-    }
-} else if(!isFalling &amp;&amp; hspeed &gt; 0 &amp;&amp; place_free(x+hspeed, y+vspeed) &amp;&amp; !place_free(x+hspeed, y+PLAYER_SLOPE_HEIGHT*hspeed+1)) { //Down with pos hspeed
-    for ( i = 0; i &lt;= PLAYER_SLOPE_HEIGHT*hspeed+1; i++) {
-        if(!place_free(x+hspeed, y+vspeed+i)) {
-            vspeed = i-1;
-            break;
-        }
-    }
-} else if(!isFalling &amp;&amp; hspeed &lt; 0 &amp;&amp; place_free(x+hspeed, y+vspeed) &amp;&amp; !place_free(x+hspeed, y+PLAYER_SLOPE_HEIGHT*hspeed*-1+1)) { //Down with neg hspeed
-    for ( i = 0; i &lt;= PLAYER_SLOPE_HEIGHT*hspeed*-1+1; i++) {
-        if(!place_free(x+hspeed, y+i)) {
-            vspeed = i-1;
-            break;
-        }
-    }
-}
-
-//Jumping
-if (keyboard_check(global.settingsID.key_jump) &amp;&amp; !isFalling &amp;&amp; !isJumpHeld) {
-    vspeed = -1*PLAYER_SPEED_JUMP;
-    isFalling = true;
-    isJumpHeld = true;
-    audio_play_sound(player_jump_start, 1, false);
-} else if (!keyboard_check(global.settingsID.key_jump) &amp;&amp; isJumpHeld) {
-    isJumpHeld = false; // allow buffered inputs but prevent simply holding jump
-}
-
-//Falling
-if (place_free(x+hspeed, y+vspeed+1) &amp;&amp; !isFalling)
-    isFalling = true; //fall if not on ground
-    
-if (isFalling &amp;&amp; vspeed + GRAVITY &lt; GRAVITY_TERMINAL) { //gravity affects speed
-    vspeed += GRAVITY;
-} else if (isFalling &amp;&amp; vspeed + GRAVITY &gt;= GRAVITY_TERMINAL) {
-    vspeed = GRAVITY_TERMINAL;
-}
-
-//Collision
-if (!place_free(x+hspeed, y+vspeed)) {
-    isFree = false;
-    isMaxHspeed = false;
-    if (isFalling) { //Falling X
-        if ( hspeed &gt;= 0 ){ //Check all possible points
-            for (i = hspeed; i&gt;= 0 &amp;&amp; !isMaxHspeed; i--) { // Max possible hspeed
-                if ( place_free(x+i, y) ) {
-                    hspeed = i;
-                    isMaxHspeed = true;
-                }
-            }
-            for (i = hspeed; i &gt;= 0 &amp;&amp; !isFree; i--) {
-                if (vspeed &gt;= 0) {
-                    for ( j = vspeed; j &gt;= 0 &amp;&amp; !isFree; j--) {
-                        if( place_free(x+i, y+j) ) {
-                            hspeed = i;
-                            vspeed = j;
-                            if( !place_free(x+i, y+j+1) )
-                                isFalling = false;
-                                audio_play_sound(player_jump_end, 1, false);
-                            isFree = true;
-                        }
-                    }
-                } else {
-                    for ( j = vspeed; j &lt;= 0 &amp;&amp; !isFree; j++) {
-                        if( place_free(x+i, y+j) ) {
-                            hspeed = i;
-                            vspeed = j;
-                            isFree = true;
-                        }
-                    }
-                }
-            }
-        } else {
-            for (i = hspeed; i&lt;= 0 &amp;&amp; !isMaxHspeed; i++) { // Max possible hspeed
-                if ( place_free(x+i, y) ) {
-                    hspeed = i;
-                    isMaxHspeed = true;
-                }
-            }
-            for (i = hspeed; i &lt;= 0 &amp;&amp; !isFree; i++) {
-                if (vspeed &gt;= 0) {
-                    for ( j = vspeed; j &gt;= 0 &amp;&amp; !isFree; j--) {
-                        if( place_free(x+i, y+j) ) {
-                            hspeed = i;
-                            vspeed = j;
-                            if( !place_free(x+i, y+j+1) )
-                                isFalling = false;
-                                audio_play_sound(player_jump_end, 1, false);
-                            isFree = true;
-                        }
-                    }
-                } else {
-                    for ( j = vspeed; j &lt;= 0 &amp;&amp; !isFree; j++) {
-                        if( place_free(x+i, y+j) ) {
-                            hspeed = i;
-                            vspeed = j;
-                            isFree = true;
-                        }
-                    }
-                }
-            }
-        }
-    } else {
-        if ( hspeed &gt; 0 ) {
-            for (i = hspeed; i &gt;= 0; i--) {
-                if ( place_free(x+i, y+vspeed) ) {
-                    hspeed = i;
-                    isFree = true;
-                }
-            }
-        } else {
-            for (i = hspeed; i &lt;= 0; i++) {
-                if ( place_free(x+i, y+vspeed) ) {
-                    hspeed = i;
-                    isFree = true;
-                }
-            }
-        }
-    }
-}
-if (!place_free(x+hspeed, y+vspeed)) { //Y Catch
-    isFree = false;
-    for ( j = -1; j &lt; -1*PLAYER_SAFETY &amp;&amp; !isFree; j-- ) {
-        if (place_free(x+hspeed, y+vspeed+j)) {
-            y += vspeed + j;
-            vspeed = 0;
-            isFalling = false;
-            isFree = true;
-        }
-    }
-}
-
-//Sprint check and drain
-if (isSprinting) {
-    sprintMeter -= PLAYER_SPRINT_DRAIN;
-    if(sprintMeter &lt;= 0) {
-        isSprinting = false;
-        sprintMeter = 0;
-    }
-} else if (sprintMeter &lt; PLAYER_SPRINT_MAX) { //Sprint recovery
-    sprintMeter += getRecovery(self);
-    if(sprintMeter &gt; PLAYER_SPRINT_MAX)
-        sprintMeter = PLAYER_SPRINT_MAX;
-}
-
-x+=hspeed;
-y+=vspeed;
-</string>
+            <kind>9</kind>
+            <script>playerMove</script>
+          </argument>
+          <argument>
+            <kind>0</kind>
+            <string></string>
+          </argument>
+          <argument>
+            <kind>0</kind>
+            <string></string>
+          </argument>
+          <argument>
+            <kind>0</kind>
+            <string></string>
+          </argument>
+          <argument>
+            <kind>0</kind>
+            <string></string>
+          </argument>
+          <argument>
+            <kind>0</kind>
+            <string></string>
           </argument>
         </arguments>
       </action>

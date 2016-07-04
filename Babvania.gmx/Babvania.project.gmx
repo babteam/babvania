@@ -29,6 +29,7 @@
     <scripts name="player">
       <script>scripts\getMaxSpeed.gml</script>
       <script>scripts\getRecovery.gml</script>
+      <script>scripts\playerMove.gml</script>
     </scripts>
   </scripts>
   <objects name="objects">
