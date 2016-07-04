@@ -98,24 +98,24 @@ if (keyboard_check(global.settingsID.key_right) &amp;&amp; !keyboard_check(globa
 
 //Slope detection
 //Up
-if(!isFalling &amp;&amp; !place_free(x+hspeed, y+vspeed) &amp;&amp; place_free(x+hspeed, y+vspeed-PLAYER_SLOPE_HEIGHT*hspeed)) {
-    for ( i = 0; i &lt;= PLAYER_SLOPE_HEIGHT*hspeed; i++) {
-        if(place_free(x+hspeed, y+vspeed-i)) {
-            vspeed -= i;
+if(!isFalling &amp;&amp; !place_free(x+hspeed, y+vspeed) &amp;&amp; place_free(x+hspeed, y-PLAYER_SLOPE_HEIGHT*hspeed-1)) {
+    for ( i = 0; i &lt;= PLAYER_SLOPE_HEIGHT*hspeed-1; i++) {
+        if(place_free(x+hspeed, y-i)) {
+            vspeed = -1*i;
             break;
         }
     }
-} else if(hspeed &gt; 0 &amp;&amp; place_free(x+hspeed, y+vspeed) &amp;&amp; !place_free(x+hspeed, y+vspeed+PLAYER_SLOPE_HEIGHT*hspeed+1)) { //Down with pos hspeed
+} else if(!isFalling &amp;&amp; hspeed &gt; 0 &amp;&amp; place_free(x+hspeed, y+vspeed) &amp;&amp; !place_free(x+hspeed, y+PLAYER_SLOPE_HEIGHT*hspeed+1)) { //Down with pos hspeed
     for ( i = 0; i &lt;= PLAYER_SLOPE_HEIGHT*hspeed+1; i++) {
         if(!place_free(x+hspeed, y+vspeed+i)) {
-            vspeed += i-1;
+            vspeed = i-1;
             break;
         }
     }
-} else if(hspeed &lt; 0 &amp;&amp; place_free(x+hspeed, y+vspeed) &amp;&amp; !place_free(x+hspeed, y+vspeed+PLAYER_SLOPE_HEIGHT*hspeed*-1+1)) { //Down with neg hspeed
+} else if(!isFalling &amp;&amp; hspeed &lt; 0 &amp;&amp; place_free(x+hspeed, y+vspeed) &amp;&amp; !place_free(x+hspeed, y+PLAYER_SLOPE_HEIGHT*hspeed*-1+1)) { //Down with neg hspeed
     for ( i = 0; i &lt;= PLAYER_SLOPE_HEIGHT*hspeed*-1+1; i++) {
-        if(!place_free(x+hspeed, y+vspeed+i)) {
-            vspeed += i-1;
+        if(!place_free(x+hspeed, y+i)) {
+            vspeed = i-1;
             break;
         }
     }
