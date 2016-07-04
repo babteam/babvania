@@ -105,8 +105,15 @@ if(!isFalling &amp;&amp; !place_free(x+hspeed, y+vspeed) &amp;&amp; place_free(x
             break;
         }
     }
-} else if(place_free(x+hspeed, y+vspeed) &amp;&amp; !place_free(x+hspeed, y+vspeed+PLAYER_SLOPE_HEIGHT*hspeed+1)) { //Down
+} else if(hspeed &gt; 0 &amp;&amp; place_free(x+hspeed, y+vspeed) &amp;&amp; !place_free(x+hspeed, y+vspeed+PLAYER_SLOPE_HEIGHT*hspeed+1)) { //Down with pos hspeed
     for ( i = 0; i &lt;= PLAYER_SLOPE_HEIGHT*hspeed+1; i++) {
+        if(!place_free(x+hspeed, y+vspeed+i)) {
+            vspeed += i-1;
+            break;
+        }
+    }
+} else if(hspeed &lt; 0 &amp;&amp; place_free(x+hspeed, y+vspeed) &amp;&amp; !place_free(x+hspeed, y+vspeed+PLAYER_SLOPE_HEIGHT*hspeed*-1+1)) { //Down with neg hspeed
+    for ( i = 0; i &lt;= PLAYER_SLOPE_HEIGHT*hspeed*-1+1; i++) {
         if(!place_free(x+hspeed, y+vspeed+i)) {
             vspeed += i-1;
             break;
