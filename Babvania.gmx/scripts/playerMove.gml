@@ -36,7 +36,7 @@ if (keyboard_check(global.settingsID.key_right) && !keyboard_check(global.settin
     }
 }
 
-//Slope detection
+/*//Slope detection
 //Up
 if(!isFalling && !place_free(x+hspeed, y+vspeed) && place_free(x+hspeed, y-PLAYER_SLOPE_HEIGHT*hspeed-1)) {
     for ( i = 0; i <= PLAYER_SLOPE_HEIGHT*hspeed-1; i++) {
@@ -59,7 +59,7 @@ if(!isFalling && !place_free(x+hspeed, y+vspeed) && place_free(x+hspeed, y-PLAYE
             break;
         }
     }
-}
+}*/
 
 //Jumping
 if (keyboard_check(global.settingsID.key_jump) && !isFalling && !isJumpHeld) {
@@ -81,7 +81,67 @@ if (isFalling && vspeed + GRAVITY < GRAVITY_TERMINAL) { //gravity affects speed
     vspeed = GRAVITY_TERMINAL;
 }
 
-//Collision
+//Alt Collision
+if(!place_free(x+hspeed, y+vspeed)) {
+    if(collision_point(x+hspeed/abs(hspeed), y, tile_block, false, true) != noone && collision_point(x+hspeed/abs(hspeed), y, tile_block, false, true).isSlope) { //upward slope handling
+        if(vspeed >= 0) {
+            for(i = vspeed; i > -1*abs(hspeed)*PLAYER_SLOPE_HEIGHT; i--) {
+                if(place_free(x+hspeed, y+i)){
+                    vspeed = i;
+                    if(isFalling) {
+                        audio_play_sound(player_jump_end, 1, false);
+                        isFalling = false;
+                    }
+                    break;
+                }
+            }
+        } //insert head collision
+    } else { //normal block collision
+        if(vspeed > 0 ) { //falling/downslope collision
+            if(hspeed != 0) {
+                for (i = abs(hspeed); i >=0; i-- ) {
+                    if(place_free(x+i*hspeed/abs(hspeed), y)) {
+                        hspeed = i*hspeed/abs(hspeed);
+                        for (j = vspeed-1; j >= 0; j--) {
+                            if(place_free(x+hspeed, y+j)) {
+                                vspeed = j;
+                                if(isFalling && !place_free(x+hspeed, y+j+1)) {
+                                    audio_play_sound(player_jump_end, 1, false);
+                                    isFalling = false;
+                                }
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            } else {
+                for (j = vspeed-1; j >= -1 ; j--) {
+                    if(place_free(x+hspeed, y+j)) {
+                        vspeed = j;
+                        if(isFalling && !place_free(x+hspeed, y+j+1)) {
+                            audio_play_sound(player_jump_end, 1, false);
+                            isFalling = false;
+                        }
+                        break;
+                    }
+                }
+            }
+        } else if(vspeed <= 0) { //horizontal collision
+            for(i = abs(hspeed); i >= -1; i--) {
+                if(place_free(x+hspeed/abs(hspeed)*i, y)) {
+                    hspeed = hspeed/abs(hspeed)*i;
+                    break;
+                }
+            }
+        }
+    }
+} else if (collision_point(x+hspeed, y+vspeed+abs(hspeed)*PLAYER_SLOPE_HEIGHT, tile_block, false, true) != noone && 
+           collision_point(x+hspeed, y+vspeed+abs(hspeed)*PLAYER_SLOPE_HEIGHT, tile_block, false, true).isSlope) { //downward slope handling
+    
+}
+
+/*//Collision
 if (!place_free(x+hspeed, y+vspeed)) {
     isFree = false;
     isMaxHspeed = false;
@@ -173,7 +233,7 @@ if (!place_free(x+hspeed, y+vspeed)) { //Y Catch
             isFree = true;
         }
     }
-}
+}*/
 
 //Sprint check and drain
 if (isSprinting) {

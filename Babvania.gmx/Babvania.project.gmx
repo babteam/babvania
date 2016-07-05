@@ -40,8 +40,8 @@
       <object>objects\settings</object>
     </objects>
     <objects name="environment">
-      <object>objects\tile</object>
-      <object>objects\tile45</object>
+      <object>objects\tile_block</object>
+      <object>objects\tile_slope</object>
     </objects>
     <object>objects\player</object>
   </objects>
